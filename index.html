@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#F7F3EC" />
+  <meta name="description" content="Track your monthly expenses beautifully — no sign up, works offline" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+  <link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
+  <title>Spendly</title>
+</head>
+
+<body>
+
+  <!-- ===== APP SHELL ===== -->
+  <div id="app">
+
+    <!-- Header -->
+    <header id="header">
+      <div class="header-left">
+        <h1 class="logo"><img src="/logo-mark.svg" alt="Spendly" width="28" height="28" /> Spendly</h1>
+      </div>
+      <div class="month-nav">
+        <button id="prev-month" class="icon-btn" aria-label="Previous month">‹</button>
+        <span id="current-month-label"></span>
+        <button id="next-month" class="icon-btn" aria-label="Next month">›</button>
+      </div>
+    </header>
+
+    <!-- ===== DASHBOARD VIEW ===== -->
+    <main id="view-dashboard" class="view active">
+
+      <!-- Budget Card -->
+      <section class="budget-card glass-card" id="budget-card">
+        <div class="budget-header">
+          <span class="budget-label">Monthly Budget</span>
+          <button id="btn-set-budget" class="btn-ghost">Edit</button>
+        </div>
+        <div class="budget-amount" id="budget-amount">Not set</div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="budget-meta">
+          <span id="spent-label">Spent: —</span>
+          <span id="remaining-label">Left: —</span>
+        </div>
+      </section>
+
+      <!-- Category Donut -->
+      <section class="chart-card glass-card" id="chart-card">
+        <h2 class="section-title">Breakdown</h2>
+        <div class="chart-area">
+          <div class="donut-container" id="donut-container">
+            <svg viewBox="0 0 36 36" class="donut-svg" id="donut-svg"></svg>
+            <div class="donut-center" id="donut-center-text"></div>
+          </div>
+          <div class="chart-legend" id="chart-legend"></div>
+        </div>
+        <div class="empty-state" id="chart-empty">No expenses yet this month</div>
+      </section>
+
+      <!-- Recent Expenses -->
+      <section class="expenses-card glass-card" id="expenses-section">
+        <div class="section-header">
+          <h2 class="section-title">Recent Expenses</h2>
+        </div>
+        <ul class="expense-list" id="expense-list"></ul>
+        <div class="empty-state" id="expenses-empty">Tap + to add your first expense</div>
+      </section>
+
+    </main>
+
+    <!-- ===== ADD EXPENSE VIEW ===== -->
+    <main id="view-add" class="view">
+      <section class="form-card glass-card">
+        <h2 class="section-title">Add Expense</h2>
+        <form id="expense-form" autocomplete="off">
+          <div class="form-group">
+            <label for="expense-amount">Amount</label>
+            <input type="number" id="expense-amount" placeholder="0" min="0" step="any" required inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <div class="category-picker" id="category-picker"></div>
+          </div>
+          <div class="form-group">
+            <label for="expense-note">Note <span class="optional">(optional)</span></label>
+            <input type="text" id="expense-note" placeholder="e.g. Lunch at cafe" maxlength="60" />
+          </div>
+          <div class="form-group">
+            <label for="expense-date">Date</label>
+            <input type="date" id="expense-date" required />
+          </div>
+          <button type="submit" class="btn-primary" id="btn-add-expense">Add Expense</button>
+        </form>
+      </section>
+    </main>
+
+    <!-- ===== SETTINGS VIEW ===== -->
+    <main id="view-settings" class="view">
+      <section class="form-card glass-card">
+        <h2 class="section-title">Categories</h2>
+        <div class="category-manage-list" id="category-manage-list"></div>
+        <form id="add-category-form" class="add-cat-form" autocomplete="off">
+          <input type="text" id="new-category-name" placeholder="New category name" maxlength="20" required />
+          <button type="submit" class="btn-primary btn-sm">Add</button>
+        </form>
+      </section>
+      <section class="form-card glass-card" style="margin-top:16px">
+        <h2 class="section-title">Budget</h2>
+        <form id="budget-form" autocomplete="off">
+          <div class="form-group">
+            <label for="budget-input">Monthly Budget Amount</label>
+            <input type="number" id="budget-input" placeholder="e.g. 50000" min="0" step="any" required
+              inputmode="decimal" />
+          </div>
+          <button type="submit" class="btn-primary">Save Budget</button>
+        </form>
+      </section>
+      <section class="form-card glass-card" style="margin-top:16px">
+        <h2 class="section-title">Data</h2>
+        <p class="data-info">All data is stored locally on this device. Nothing is sent to any server.</p>
+        <button id="btn-clear-month" class="btn-danger">Clear This Month</button>
+      </section>
+    </main>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <nav id="bottom-nav">
+      <button class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-view="add">
+        <div class="add-btn-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </div>
+        <span>Add</span>
+      </button>
+      <button class="nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
