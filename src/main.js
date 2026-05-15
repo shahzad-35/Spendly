@@ -3,7 +3,10 @@
    ======================================== */
 
 import './style.css';
+import { inject } from '@vercel/analytics';
 import * as store from './store.js';
+
+inject();
 import * as ui from './ui.js';
 
 let currentMonth = store.monthKey(new Date());
