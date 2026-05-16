@@ -170,17 +170,15 @@ The app follows the **Spendly Design System** — a warm, calm aesthetic for fin
 ---
 
 ## Upcoming features
-- [ ] Lock budget after setting (no duplicate/edit for current month, no editing past months)
-- [ ] Calendar view when tapping month/date
 - [ ] Emoji/icon picker when adding a custom category
 - [ ] Dark mode toggle
-- [ ] Income tracking alongside expenses
-- [ ] Recurring expenses auto-tracking
-- [ ] Daily 10pm reminder notification to log expenses
 - [ ] Monthly spending comparison bar chart
+- [ ] Export data as CSV/PDF
+- [ ] Recurring expenses auto-tracking
+- [ ] Income tracking alongside expenses
+- [ ] Daily 10pm reminder notification to log expenses
 - [ ] Spending insights and rule-based tips
 - [ ] Multi-currency support with conversion
-- [ ] Export data as CSV/PDF
 - [ ] Receipt photo attachment
 ---
 

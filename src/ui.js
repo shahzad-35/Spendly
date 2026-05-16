@@ -154,6 +154,39 @@ export function renderCategoryManager(onDelete) {
     });
 }
 
+/* ===== MONTH PICKER ===== */
+const MONTH_NAMES_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+export function renderMonthPicker(year, currentMonthKey, onMonthClick) {
+    const grid = document.getElementById('calendar-grid');
+    const yearLabel = document.getElementById('cal-year-label');
+    yearLabel.textContent = year;
+
+    const today = new Date();
+    const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+    let html = '';
+    for (let m = 1; m <= 12; m++) {
+        const key = `${year}-${String(m).padStart(2, '0')}`;
+        const isSelected = key === currentMonthKey;
+        const isNow = key === todayKey;
+        const hasData = store.getMonth(key).expenses.length > 0 || store.getMonth(key).budget > 0;
+        let cls = 'cal-month';
+        if (isSelected) cls += ' selected';
+        if (isNow) cls += ' today';
+        if (hasData) cls += ' has-data';
+        html += `<span class="${cls}" data-key="${key}">${MONTH_NAMES_SHORT[m - 1]}</span>`;
+    }
+
+    grid.innerHTML = html;
+
+    grid.querySelectorAll('.cal-month').forEach(el => {
+        el.addEventListener('click', () => {
+            if (onMonthClick) onMonthClick(el.dataset.key);
+        });
+    });
+}
+
 /* ===== TOAST ===== */
 export function toast(message, type = 'success') {
     const container = document.getElementById('toast-container');

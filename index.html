@@ -30,6 +30,18 @@
       </div>
     </header>
 
+    <!-- Month picker dropdown -->
+    <div id="calendar-overlay" class="calendar-overlay" style="display:none">
+      <div class="calendar-card">
+        <div class="calendar-year-nav">
+          <button id="cal-prev-year" class="icon-btn" aria-label="Previous year">‹</button>
+          <span id="cal-year-label" class="cal-year-label"></span>
+          <button id="cal-next-year" class="icon-btn" aria-label="Next year">›</button>
+        </div>
+        <div class="calendar-grid" id="calendar-grid"></div>
+      </div>
+    </div>
+
     <!-- ===== DASHBOARD VIEW ===== -->
     <main id="view-dashboard" class="view active">
 
@@ -37,7 +49,7 @@
       <section class="budget-card glass-card" id="budget-card">
         <div class="budget-header">
           <span class="budget-label">Monthly Budget</span>
-          <button id="btn-set-budget" class="btn-ghost">Edit</button>
+          <button id="btn-set-budget" class="btn-ghost">Set Budget</button>
         </div>
         <div class="budget-amount" id="budget-amount">Not set</div>
         <div class="progress-track">
@@ -64,9 +76,7 @@
 
       <!-- Recent Expenses -->
       <section class="expenses-card glass-card" id="expenses-section">
-        <div class="section-header">
-          <h2 class="section-title">Recent Expenses</h2>
-        </div>
+        <h2 class="section-title">Recent Expenses</h2>
         <ul class="expense-list" id="expense-list"></ul>
         <div class="empty-state" id="expenses-empty">Tap + to add your first expense</div>
       </section>
@@ -111,6 +121,11 @@
       </section>
       <section class="form-card glass-card" style="margin-top:16px">
         <h2 class="section-title">Budget</h2>
+        <div id="budget-locked" class="budget-locked" style="display:none">
+          <div class="budget-locked-icon">🔒</div>
+          <div class="budget-locked-text">Budget is set for this month</div>
+          <div class="budget-locked-hint" id="budget-locked-hint"></div>
+        </div>
         <form id="budget-form" autocomplete="off">
           <div class="form-group">
             <label for="budget-input">Monthly Budget Amount</label>

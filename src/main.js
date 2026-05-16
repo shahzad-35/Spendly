@@ -11,12 +11,15 @@ import * as ui from './ui.js';
 
 let currentMonth = store.monthKey(new Date());
 let selectedCategory = null;
+let calendarOpen = false;
+let calendarYear = new Date().getFullYear();
 
 /* ===== INIT ===== */
 function init() {
     renderAll();
     setupNav();
     setupMonthNav();
+    setupCalendar();
     setupExpenseForm();
     setupBudgetForm();
     setupCategoryForm();
@@ -26,6 +29,7 @@ function init() {
 
 /* ===== RENDER ALL ===== */
 function renderAll() {
+    closeCalendar();
     document.getElementById('current-month-label').textContent = store.monthLabel(currentMonth);
     ui.renderBudget(currentMonth);
     ui.renderDonut(currentMonth);
@@ -80,6 +84,52 @@ function setupMonthNav() {
     });
 }
 
+/* ===== MONTH PICKER ===== */
+function setupCalendar() {
+    const label = document.getElementById('current-month-label');
+    const overlay = document.getElementById('calendar-overlay');
+
+    label.addEventListener('click', () => {
+        if (calendarOpen) {
+            closeCalendar();
+        } else {
+            openCalendar();
+        }
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeCalendar();
+    });
+
+    document.getElementById('cal-prev-year').addEventListener('click', () => {
+        calendarYear--;
+        ui.renderMonthPicker(calendarYear, currentMonth, handleMonthPick);
+    });
+
+    document.getElementById('cal-next-year').addEventListener('click', () => {
+        calendarYear++;
+        ui.renderMonthPicker(calendarYear, currentMonth, handleMonthPick);
+    });
+}
+
+function openCalendar() {
+    calendarOpen = true;
+    calendarYear = parseInt(currentMonth.split('-')[0], 10);
+    document.getElementById('calendar-overlay').style.display = 'flex';
+    ui.renderMonthPicker(calendarYear, currentMonth, handleMonthPick);
+}
+
+function closeCalendar() {
+    calendarOpen = false;
+    document.getElementById('calendar-overlay').style.display = 'none';
+}
+
+function handleMonthPick(monthKey) {
+    currentMonth = monthKey;
+    closeCalendar();
+    renderAll();
+}
+
 /* ===== EXPENSE FORM ===== */
 function setupExpenseForm() {
     const form = document.getElementById('expense-form');
@@ -120,7 +170,6 @@ function setupExpenseForm() {
         ui.renderCategoryPicker(null);
         setupCategoryChipListeners();
 
-        // If the expense is in the current month, update dashboard
         if (expenseMonth === currentMonth) {
             ui.renderBudget(currentMonth);
             ui.renderDonut(currentMonth);
@@ -160,6 +209,16 @@ function setupBudgetForm() {
     const form = document.getElementById('budget-form');
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+        const now = store.monthKey(new Date());
+        const existing = store.getMonth(currentMonth);
+        if (currentMonth < now) {
+            ui.toast('Past months can\'t be edited', 'error');
+            return;
+        }
+        if (existing.budget > 0) {
+            ui.toast('Budget already set for this month', 'error');
+            return;
+        }
         const amount = parseFloat(document.getElementById('budget-input').value);
         if (!amount || amount <= 0) {
             ui.toast('Enter a valid budget amount', 'error');
@@ -168,9 +227,9 @@ function setupBudgetForm() {
         store.setBudget(currentMonth, amount);
         ui.toast('Budget saved! 💰');
         ui.renderBudget(currentMonth);
+        updateBudgetInput();
     });
 
-    // Quick edit from dashboard
     document.getElementById('btn-set-budget').addEventListener('click', () => {
         switchView('settings');
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -182,9 +241,29 @@ function setupBudgetForm() {
 function updateBudgetInput() {
     const month = store.getMonth(currentMonth);
     const input = document.getElementById('budget-input');
-    if (month.budget > 0) {
-        input.value = month.budget;
+    const form = document.getElementById('budget-form');
+    const locked = document.getElementById('budget-locked');
+    const hint = document.getElementById('budget-locked-hint');
+    const editBtn = document.getElementById('btn-set-budget');
+
+    const now = store.monthKey(new Date());
+    const isPast = currentMonth < now;
+    const hasBudget = month.budget > 0;
+    const isLocked = hasBudget || isPast;
+
+    if (isLocked) {
+        form.style.display = 'none';
+        locked.style.display = 'flex';
+        if (isPast) {
+            hint.textContent = `${store.monthLabel(currentMonth)} — past months can't be edited.`;
+        } else {
+            hint.textContent = `${store.monthLabel(currentMonth)} — ${Number(month.budget).toLocaleString()}. Clear month data to reset.`;
+        }
+        editBtn.style.display = 'none';
     } else {
+        form.style.display = '';
+        locked.style.display = 'none';
+        editBtn.style.display = '';
         input.value = '';
     }
 }

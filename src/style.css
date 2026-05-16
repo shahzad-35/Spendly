@@ -151,6 +151,7 @@ body {
   min-width: 84px;
   text-align: center;
   color: var(--ink-900);
+  cursor: pointer;
 }
 
 .icon-btn {
@@ -169,6 +170,104 @@ body {
 }
 .icon-btn:hover { background: var(--ink-100); color: var(--ink-900); }
 .icon-btn:active { transform: scale(0.92); }
+
+/* ===== CALENDAR OVERLAY ===== */
+.calendar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 150;
+  display: flex;
+  justify-content: center;
+  padding-top: calc(var(--header-height) + 8px);
+  background: rgba(20, 32, 28, 0.15);
+}
+
+.calendar-card {
+  background: var(--paper);
+  border: 1px solid var(--ink-150);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  width: calc(100% - 32px);
+  max-width: 448px;
+  box-shadow: 0 16px 36px rgba(20, 32, 28, 0.12);
+  animation: fadeUp 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  align-self: flex-start;
+}
+
+.calendar-year-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.cal-year-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-900);
+  min-width: 52px;
+  text-align: center;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.cal-month {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-700);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cal-month:hover {
+  background: var(--ink-100);
+}
+
+.cal-month.today {
+  font-weight: 700;
+  color: var(--emerald-700);
+}
+
+.cal-month.selected {
+  background: var(--emerald-700);
+  color: #fff;
+  font-weight: 600;
+}
+
+.cal-month.selected.today {
+  color: #fff;
+}
+
+.cal-month.has-data::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-full);
+  background: var(--emerald-500);
+}
+
+.cal-month.selected.has-data::after {
+  background: var(--emerald-200);
+}
 
 /* ===== CARD ===== */
 .glass-card {
@@ -455,6 +554,31 @@ body {
 
 .built-by a:hover {
   text-decoration: underline;
+}
+
+/* ===== BUDGET LOCKED ===== */
+.budget-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.budget-locked-icon {
+  font-size: 24px;
+}
+
+.budget-locked-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+.budget-locked-hint {
+  font-size: 12px;
+  color: var(--ink-500);
 }
 
 /* ===== FORM STYLES ===== */

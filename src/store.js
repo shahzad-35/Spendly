@@ -127,6 +127,23 @@ export function getSpendingByCategory(monthKey) {
         .sort((a, b) => b.amount - a.amount);
 }
 
+/** Get set of days (1-31) that have expenses in a month */
+export function getExpenseDays(monthKey) {
+    const month = getMonth(monthKey);
+    const days = new Set();
+    month.expenses.forEach(e => {
+        const day = parseInt(e.date.split('-')[2], 10);
+        if (day) days.add(day);
+    });
+    return days;
+}
+
+/** Get expenses for a specific date */
+export function getExpensesByDate(monthKey, dateStr) {
+    const month = getMonth(monthKey);
+    return month.expenses.filter(e => e.date === dateStr);
+}
+
 /** Clear all data for a month */
 export function clearMonth(monthKey) {
     const all = loadAll();
