@@ -170,9 +170,6 @@ The app follows the **Spendly Design System** — a warm, calm aesthetic for fin
 ---
 
 ## Upcoming features
-- [ ] Monthly spending comparison bar chart
-- [ ] Export data as CSV/PDF
-- [ ] Recurring expenses auto-tracking
 - [ ] Income tracking alongside expenses
 - [ ] Daily 10pm reminder notification to log expenses
 - [ ] Spending insights and rule-based tips

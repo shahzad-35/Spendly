@@ -110,6 +110,19 @@ export function getTotalSpent(monthKey) {
     return month.expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
 }
 
+/** Get spending totals for the last N months ending at the given month */
+export function getMonthlyTotals(currentKey, count = 6) {
+    const results = [];
+    let [y, m] = currentKey.split('-').map(Number);
+    for (let i = 0; i < count; i++) {
+        const key = `${y}-${String(m).padStart(2, '0')}`;
+        results.unshift({ key, spent: getTotalSpent(key), budget: getMonth(key).budget });
+        m--;
+        if (m < 1) { m = 12; y--; }
+    }
+    return results;
+}
+
 /** Get spending grouped by category for a month */
 export function getSpendingByCategory(monthKey) {
     const month = getMonth(monthKey);
@@ -142,6 +155,57 @@ export function getExpenseDays(monthKey) {
 export function getExpensesByDate(monthKey, dateStr) {
     const month = getMonth(monthKey);
     return month.expenses.filter(e => e.date === dateStr);
+}
+
+/** Get recurring expense templates */
+export function getRecurring() {
+    const all = loadAll();
+    if (!all._recurring) { all._recurring = []; saveAll(all); }
+    return all._recurring;
+}
+
+/** Add a recurring expense template */
+export function addRecurring(template) {
+    const all = loadAll();
+    if (!all._recurring) all._recurring = [];
+    template.id = 'rec_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+    all._recurring.push(template);
+    saveAll(all);
+    return template;
+}
+
+/** Delete a recurring expense template */
+export function deleteRecurring(id) {
+    const all = loadAll();
+    if (!all._recurring) return;
+    all._recurring = all._recurring.filter(r => r.id !== id);
+    saveAll(all);
+}
+
+/** Apply recurring expenses to a month if not already applied */
+export function applyRecurring(monthKeyStr) {
+    const all = loadAll();
+    const recurring = all._recurring || [];
+    if (!recurring.length) return false;
+    if (!all[monthKeyStr]) all[monthKeyStr] = { budget: 0, expenses: [] };
+    const month = all[monthKeyStr];
+    if (month._recurringApplied) return false;
+
+    const dateStr = `${monthKeyStr}-01`;
+    recurring.forEach(r => {
+        const expense = {
+            id: Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+            amount: r.amount,
+            category: r.category,
+            note: r.note || '',
+            date: dateStr,
+            recurring: true,
+        };
+        month.expenses.unshift(expense);
+    });
+    month._recurringApplied = true;
+    saveAll(all);
+    return true;
 }
 
 /** Clear all data for a month */

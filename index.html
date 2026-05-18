@@ -84,6 +84,12 @@
         <div class="empty-state" id="chart-empty">No expenses yet this month</div>
       </section>
 
+      <!-- Monthly Comparison -->
+      <section class="bar-chart-card glass-card" id="bar-chart-card">
+        <h2 class="section-title">Monthly Comparison</h2>
+        <div class="bar-chart" id="bar-chart"></div>
+      </section>
+
       <!-- Recent Expenses -->
       <section class="expenses-card glass-card" id="expenses-section">
         <h2 class="section-title">Recent Expenses</h2>
@@ -100,7 +106,7 @@
         <form id="expense-form" autocomplete="off">
           <div class="form-group">
             <label for="expense-amount">Amount</label>
-            <input type="number" id="expense-amount" placeholder="0" min="0" step="any" required inputmode="decimal" />
+            <input type="text" id="expense-amount" placeholder="0" required inputmode="decimal" />
           </div>
           <div class="form-group">
             <label>Category</label>
@@ -132,6 +138,28 @@
         <div class="emoji-grid" id="emoji-grid" style="display:none"></div>
       </section>
       <section class="form-card glass-card" style="margin-top:16px">
+        <h2 class="section-title">Recurring Expenses</h2>
+        <p class="data-info">These are auto-added on the 1st of each month.</p>
+        <div class="recurring-list" id="recurring-list"></div>
+        <form id="add-recurring-form" class="recurring-form" autocomplete="off">
+          <div class="form-group">
+            <label>Category</label>
+            <div class="category-picker" id="recurring-category-picker"></div>
+          </div>
+          <div class="recurring-inline">
+            <div class="form-group" style="flex:1;margin-bottom:0">
+              <label for="recurring-note">Note</label>
+              <input type="text" id="recurring-note" placeholder="e.g. Netflix" maxlength="40" />
+            </div>
+            <div class="form-group" style="width:110px;margin-bottom:0">
+              <label for="recurring-amount">Amount</label>
+              <input type="text" id="recurring-amount" placeholder="0" required inputmode="decimal" />
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" style="margin-top:14px">Add Recurring</button>
+        </form>
+      </section>
+      <section class="form-card glass-card" style="margin-top:16px">
         <h2 class="section-title">Budget</h2>
         <div id="budget-locked" class="budget-locked" style="display:none">
           <div class="budget-locked-icon">🔒</div>
@@ -141,11 +169,25 @@
         <form id="budget-form" autocomplete="off">
           <div class="form-group">
             <label for="budget-input">Monthly Budget Amount</label>
-            <input type="number" id="budget-input" placeholder="e.g. 50000" min="0" step="any" required
+            <input type="text" id="budget-input" placeholder="e.g. 50,000" required
               inputmode="decimal" />
           </div>
           <button type="submit" class="btn-primary">Save Budget</button>
         </form>
+      </section>
+      <section class="form-card glass-card" id="export-section" style="margin-top:16px;display:none">
+        <h2 class="section-title">Export</h2>
+        <p class="data-info">Download your current month's data.</p>
+        <div class="export-row">
+          <button id="btn-export-csv" class="btn-export">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Export CSV
+          </button>
+          <button id="btn-export-pdf" class="btn-export">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Export PDF
+          </button>
+        </div>
       </section>
       <section class="form-card glass-card" style="margin-top:16px">
         <h2 class="section-title">Data</h2>

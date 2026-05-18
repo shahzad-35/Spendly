@@ -56,6 +56,39 @@ export function renderDonut(monthKey) {
   `).join('');
 }
 
+/* ===== MONTHLY BAR CHART ===== */
+const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+export function renderBarChart(currentMonthKey) {
+    const data = store.getMonthlyTotals(currentMonthKey, 6);
+    const container = document.getElementById('bar-chart');
+    const card = document.getElementById('bar-chart-card');
+    const max = Math.max(...data.map(d => d.spent), 1);
+    const hasAny = data.some(d => d.spent > 0);
+
+    if (!hasAny) {
+        card.style.display = 'none';
+        return;
+    }
+    card.style.display = '';
+
+    container.innerHTML = data.map(d => {
+        const pct = (d.spent / max) * 100;
+        const [, m] = d.key.split('-').map(Number);
+        const label = MONTH_SHORT[m - 1];
+        const isCurrent = d.key === currentMonthKey;
+        const overBudget = d.budget > 0 && d.spent > d.budget;
+        return `
+      <div class="bar-col ${isCurrent ? 'current' : ''}">
+        <span class="bar-value">${fmt(d.spent)}</span>
+        <div class="bar-track">
+          <div class="bar-fill ${overBudget ? 'over' : ''}" style="height:${Math.max(pct, 2)}%"></div>
+        </div>
+        <span class="bar-label">${label}</span>
+      </div>`;
+    }).join('');
+}
+
 /* ===== BUDGET DISPLAY ===== */
 export function renderBudget(monthKey) {
     const month = store.getMonth(monthKey);
@@ -122,10 +155,43 @@ function formatDate(dateStr) {
     return `${months[d.getMonth()]} ${d.getDate()}`;
 }
 
-/* ===== CATEGORY PICKER (Add Expense form) ===== */
-export function renderCategoryPicker(selectedId) {
+/* ===== RECURRING LIST ===== */
+export function renderRecurringList(onDelete) {
+    const items = store.getRecurring();
     const cats = store.getCategories();
-    const picker = document.getElementById('category-picker');
+    const container = document.getElementById('recurring-list');
+
+    if (!items.length) {
+        container.innerHTML = '<div class="empty-state" style="padding:12px 0">No recurring expenses yet</div>';
+        return;
+    }
+
+    container.innerHTML = items.map(r => {
+        const cat = cats.find(c => c.id === r.category) || { emoji: '📦', name: r.category, color: '#6b7280' };
+        const noteStr = r.note ? `${r.note} · ` : '';
+        return `
+      <div class="recurring-item" data-id="${r.id}">
+        <div class="expense-icon" style="background:${cat.color}18;color:${cat.color}">${cat.emoji}</div>
+        <div class="expense-info">
+          <div class="expense-category">${cat.name}</div>
+          <div class="expense-note-date">${noteStr}Monthly</div>
+        </div>
+        <div class="expense-amount">${fmt(r.amount)}</div>
+        <button class="expense-delete recurring-delete" data-id="${r.id}" title="Remove">✕</button>
+      </div>`;
+    }).join('');
+
+    container.querySelectorAll('.recurring-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (onDelete) onDelete(btn.dataset.id);
+        });
+    });
+}
+
+/* ===== CATEGORY PICKER ===== */
+export function renderCategoryPicker(selectedId, containerId = 'category-picker') {
+    const cats = store.getCategories();
+    const picker = document.getElementById(containerId);
 
     picker.innerHTML = cats.map(c =>
         `<button type="button" class="cat-chip ${c.id === selectedId ? 'selected' : ''}" data-id="${c.id}">${c.emoji} ${c.name}</button>`

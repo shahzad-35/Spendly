@@ -20,6 +20,7 @@ let emojiGridOpen = false;
 function init() {
     applyTheme();
     setupThemeToggle();
+    applyRecurringExpenses();
     renderAll();
     setupNav();
     setupMonthNav();
@@ -27,7 +28,9 @@ function init() {
     setupExpenseForm();
     setupBudgetForm();
     setupCategoryForm();
+    setupRecurringForm();
     setupClearMonth();
+    setupExport();
     setDefaultDate();
 }
 
@@ -60,10 +63,13 @@ function renderAll() {
     document.getElementById('current-month-label').textContent = store.monthLabel(currentMonth);
     ui.renderBudget(currentMonth);
     ui.renderDonut(currentMonth);
+    ui.renderBarChart(currentMonth);
     ui.renderExpenses(currentMonth, handleDeleteExpense);
     ui.renderCategoryPicker(selectedCategory);
     ui.renderCategoryManager(handleDeleteCategory);
+    ui.renderRecurringList(handleDeleteRecurring);
     updateBudgetInput();
+    updateExportVisibility();
 }
 
 /* ===== VIEW NAVIGATION ===== */
@@ -88,13 +94,16 @@ function switchView(viewName) {
         if (viewName === 'dashboard') {
             ui.renderBudget(currentMonth);
             ui.renderDonut(currentMonth);
+            ui.renderBarChart(currentMonth);
             ui.renderExpenses(currentMonth, handleDeleteExpense);
         } else if (viewName === 'add') {
             ui.renderCategoryPicker(selectedCategory);
             setupCategoryChipListeners();
         } else if (viewName === 'settings') {
             ui.renderCategoryManager(handleDeleteCategory);
+            ui.renderRecurringList(handleDeleteRecurring);
             updateBudgetInput();
+            updateExportVisibility();
         }
     }
 }
@@ -160,10 +169,23 @@ function handleMonthPick(monthKey) {
 /* ===== EXPENSE FORM ===== */
 function setupExpenseForm() {
     const form = document.getElementById('expense-form');
+    const amountInput = document.getElementById('expense-amount');
+
+    amountInput.addEventListener('input', () => {
+        const raw = amountInput.value.replace(/[^0-9.]/g, '');
+        const num = parseFloat(raw);
+        if (!isNaN(num) && raw !== '') {
+            const cursor = amountInput.selectionStart;
+            const prevLen = amountInput.value.length;
+            amountInput.value = num.toLocaleString();
+            const diff = amountInput.value.length - prevLen;
+            amountInput.setSelectionRange(cursor + diff, cursor + diff);
+        }
+    });
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const amount = parseFloat(document.getElementById('expense-amount').value);
+        const amount = parseFloat(amountInput.value.replace(/[^0-9.]/g, ''));
         const note = document.getElementById('expense-note').value.trim();
         const date = document.getElementById('expense-date').value;
 
@@ -200,7 +222,9 @@ function setupExpenseForm() {
         if (expenseMonth === currentMonth) {
             ui.renderBudget(currentMonth);
             ui.renderDonut(currentMonth);
+            ui.renderBarChart(currentMonth);
             ui.renderExpenses(currentMonth, handleDeleteExpense);
+            updateExportVisibility();
         }
 
         // Switch to dashboard after adding
@@ -232,8 +256,21 @@ function setDefaultDate() {
 
 /* ===== BUDGET FORM ===== */
 function setupBudgetForm() {
-    // Settings budget form
     const form = document.getElementById('budget-form');
+    const budgetInput = document.getElementById('budget-input');
+
+    budgetInput.addEventListener('input', () => {
+        const raw = budgetInput.value.replace(/[^0-9.]/g, '');
+        const num = parseFloat(raw);
+        if (!isNaN(num) && raw !== '') {
+            const cursor = budgetInput.selectionStart;
+            const prevLen = budgetInput.value.length;
+            budgetInput.value = num.toLocaleString();
+            const diff = budgetInput.value.length - prevLen;
+            budgetInput.setSelectionRange(cursor + diff, cursor + diff);
+        }
+    });
+
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const now = store.monthKey(new Date());
@@ -246,7 +283,7 @@ function setupBudgetForm() {
             ui.toast('Budget already set for this month', 'error');
             return;
         }
-        const amount = parseFloat(document.getElementById('budget-input').value);
+        const amount = parseFloat(budgetInput.value.replace(/[^0-9.]/g, ''));
         if (!amount || amount <= 0) {
             ui.toast('Enter a valid budget amount', 'error');
             return;
@@ -345,13 +382,82 @@ function handleDeleteCategory(catId) {
     }
 }
 
+/* ===== RECURRING EXPENSES ===== */
+let selectedRecurringCategory = null;
+
+function applyRecurringExpenses() {
+    const now = store.monthKey(new Date());
+    if (store.applyRecurring(now)) {
+        ui.toast('Recurring expenses added for this month');
+    }
+}
+
+function setupRecurringForm() {
+    const form = document.getElementById('add-recurring-form');
+    const amountInput = document.getElementById('recurring-amount');
+    const picker = document.getElementById('recurring-category-picker');
+
+    ui.renderCategoryPicker(null, 'recurring-category-picker');
+    setupRecurringCategoryListeners();
+
+    amountInput.addEventListener('input', () => {
+        const raw = amountInput.value.replace(/[^0-9.]/g, '');
+        const num = parseFloat(raw);
+        if (!isNaN(num) && raw !== '') {
+            const cursor = amountInput.selectionStart;
+            const prevLen = amountInput.value.length;
+            amountInput.value = num.toLocaleString();
+            const diff = amountInput.value.length - prevLen;
+            amountInput.setSelectionRange(cursor + diff, cursor + diff);
+        }
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const amount = parseFloat(amountInput.value.replace(/[^0-9.]/g, ''));
+        const note = document.getElementById('recurring-note').value.trim();
+
+        if (!amount || amount <= 0) { ui.toast('Enter a valid amount', 'error'); return; }
+        if (!selectedRecurringCategory) { ui.toast('Select a category', 'error'); return; }
+
+        store.addRecurring({ amount, category: selectedRecurringCategory, note });
+        form.reset();
+        selectedRecurringCategory = null;
+        ui.renderCategoryPicker(null, 'recurring-category-picker');
+        setupRecurringCategoryListeners();
+        ui.renderRecurringList(handleDeleteRecurring);
+        ui.toast('Recurring expense added');
+    });
+}
+
+function setupRecurringCategoryListeners() {
+    const picker = document.getElementById('recurring-category-picker');
+    picker.querySelectorAll('.cat-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            selectedRecurringCategory = chip.dataset.id;
+            picker.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected'));
+            chip.classList.add('selected');
+        });
+    });
+}
+
+function handleDeleteRecurring(id) {
+    if (confirm('Remove this recurring expense?')) {
+        store.deleteRecurring(id);
+        ui.renderRecurringList(handleDeleteRecurring);
+        ui.toast('Recurring expense removed');
+    }
+}
+
 /* ===== DELETE EXPENSE ===== */
 function handleDeleteExpense(expenseId) {
     store.deleteExpense(currentMonth, expenseId);
     ui.toast('Expense deleted');
     ui.renderBudget(currentMonth);
     ui.renderDonut(currentMonth);
+    ui.renderBarChart(currentMonth);
     ui.renderExpenses(currentMonth, handleDeleteExpense);
+    updateExportVisibility();
 }
 
 /* ===== CLEAR MONTH ===== */
@@ -364,6 +470,95 @@ function setupClearMonth() {
             renderAll();
         }
     });
+}
+
+/* ===== EXPORT ===== */
+function setupExport() {
+    document.getElementById('btn-export-csv').addEventListener('click', exportCSV);
+    document.getElementById('btn-export-pdf').addEventListener('click', exportPDF);
+}
+
+function updateExportVisibility() {
+    const month = store.getMonth(currentMonth);
+    const hasData = month.expenses.length > 0;
+    document.getElementById('export-section').style.display = hasData ? '' : 'none';
+}
+
+function getExportData() {
+    const month = store.getMonth(currentMonth);
+    const cats = store.getCategories();
+    return month.expenses.map(e => {
+        const cat = cats.find(c => c.id === e.category) || { name: e.category, emoji: '' };
+        return { date: e.date, category: cat.name, note: e.note || '', amount: e.amount };
+    });
+}
+
+function exportCSV() {
+    const rows = getExportData();
+    if (!rows.length) { ui.toast('No expenses to export', 'error'); return; }
+
+    const header = 'Date,Category,Note,Amount';
+    const csv = [header, ...rows.map(r =>
+        `${r.date},"${r.category}","${r.note.replace(/"/g, '""')}",${r.amount}`
+    )].join('\n');
+
+    downloadFile(`spendly-${currentMonth}.csv`, csv, 'text/csv');
+    ui.toast('CSV exported');
+}
+
+function exportPDF() {
+    const rows = getExportData();
+    const month = store.getMonth(currentMonth);
+    if (!rows.length) { ui.toast('No expenses to export', 'error'); return; }
+
+    const budget = month.budget || 0;
+    const total = rows.reduce((s, r) => s + r.amount, 0);
+    const label = store.monthLabel(currentMonth);
+    const fmt = n => Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+    const tableRows = rows.map(r =>
+        `<tr><td>${r.date}</td><td>${r.category}</td><td>${r.note}</td><td style="text-align:right">${fmt(r.amount)}</td></tr>`
+    ).join('');
+
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<title>Spendly — ${label}</title>
+<style>
+  body{font-family:system-ui,sans-serif;padding:40px;color:#14201C;max-width:700px;margin:0 auto}
+  h1{font-size:20px;margin-bottom:4px} .sub{color:#6E7B75;font-size:13px;margin-bottom:24px}
+  .summary{display:flex;gap:32px;margin-bottom:24px}
+  .summary div{font-size:13px;color:#6E7B75} .summary strong{display:block;font-size:18px;color:#14201C}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:8px 10px;border-bottom:2px solid #E6E4DD;color:#6E7B75;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.05em}
+  td{padding:8px 10px;border-bottom:1px solid #EFEDE6}
+  tr:last-child td{border-bottom:none}
+  .total-row td{border-top:2px solid #E6E4DD;font-weight:600}
+</style></head><body>
+<h1>Spendly — ${label}</h1>
+<p class="sub">Expense report</p>
+<div class="summary">
+  <div>Budget<strong>${budget > 0 ? fmt(budget) : '—'}</strong></div>
+  <div>Spent<strong>${fmt(total)}</strong></div>
+  <div>Remaining<strong>${budget > 0 ? fmt(budget - total) : '—'}</strong></div>
+</div>
+<table><thead><tr><th>Date</th><th>Category</th><th>Note</th><th style="text-align:right">Amount</th></tr></thead>
+<tbody>${tableRows}
+<tr class="total-row"><td colspan="3">Total</td><td style="text-align:right">${fmt(total)}</td></tr>
+</tbody></table></body></html>`;
+
+    const w = window.open('', '_blank');
+    w.document.write(html);
+    w.document.close();
+    w.onload = () => { w.print(); };
+}
+
+function downloadFile(name, content, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
 /* ===== START ===== */
