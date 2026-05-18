@@ -3,6 +3,7 @@
    ======================================== */
 
 import * as store from './store.js';
+import { generateInsights } from './insights.js';
 
 /* ===== FORMAT HELPERS ===== */
 function fmt(n) {
@@ -186,6 +187,65 @@ export function renderRecurringList(onDelete) {
             if (onDelete) onDelete(btn.dataset.id);
         });
     });
+}
+
+/* ===== INCOME LIST ===== */
+export function renderIncome(monthKey, onDelete) {
+    const month = store.getMonth(monthKey);
+    const incomeEntries = month.income || [];
+    const card = document.getElementById('income-card');
+    const list = document.getElementById('income-list');
+    const totalEl = document.getElementById('income-total');
+
+    if (incomeEntries.length === 0) {
+        card.style.display = 'none';
+        return;
+    }
+
+    card.style.display = '';
+    const total = incomeEntries.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0);
+    totalEl.textContent = fmt(total);
+
+    list.innerHTML = incomeEntries.map(i => {
+        const source = i.source || 'Income';
+        const dateStr = formatDate(i.date);
+        return `
+      <li class="income-item" data-id="${i.id}">
+        <div class="income-icon">💵</div>
+        <div class="income-info">
+          <div class="income-source">${source}</div>
+          <div class="income-date">${dateStr}</div>
+        </div>
+        <div class="income-amount-text">${fmt(i.amount)}</div>
+        <button class="income-delete" data-id="${i.id}" title="Delete">✕</button>
+      </li>`;
+    }).join('');
+
+    list.querySelectorAll('.income-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (onDelete) onDelete(btn.dataset.id);
+        });
+    });
+}
+
+/* ===== INSIGHTS ===== */
+export function renderInsights(monthKey) {
+    const insights = generateInsights(monthKey);
+    const card = document.getElementById('insights-card');
+    const list = document.getElementById('insights-list');
+
+    if (insights.length === 0) {
+        card.style.display = 'none';
+        return;
+    }
+
+    card.style.display = '';
+    list.innerHTML = insights.map(i => `
+    <div class="insight-item ${i.type}">
+      <span class="insight-emoji">${i.emoji}</span>
+      <span class="insight-text">${i.text}</span>
+    </div>
+  `).join('');
 }
 
 /* ===== CATEGORY PICKER ===== */
