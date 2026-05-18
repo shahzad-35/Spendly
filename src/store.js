@@ -59,11 +59,11 @@ export function getCategories() {
 }
 
 /** Add a custom category */
-export function addCategory(name) {
+export function addCategory(name, emoji = '📌') {
     const all = loadAll();
     const cats = all._categories || [...DEFAULT_CATEGORIES];
     const id = name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now();
-    const newCat = { id, name, emoji: '📌', color: getNextColor() };
+    const newCat = { id, name, emoji, color: getNextColor() };
     cats.push(newCat);
     all._categories = cats;
     saveAll(all);

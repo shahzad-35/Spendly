@@ -170,8 +170,6 @@ The app follows the **Spendly Design System** — a warm, calm aesthetic for fin
 ---
 
 ## Upcoming features
-- [ ] Emoji/icon picker when adding a custom category
-- [ ] Dark mode toggle
 - [ ] Monthly spending comparison bar chart
 - [ ] Export data as CSV/PDF
 - [ ] Recurring expenses auto-tracking

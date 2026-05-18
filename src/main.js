@@ -13,9 +13,13 @@ let currentMonth = store.monthKey(new Date());
 let selectedCategory = null;
 let calendarOpen = false;
 let calendarYear = new Date().getFullYear();
+let selectedEmoji = '📌';
+let emojiGridOpen = false;
 
 /* ===== INIT ===== */
 function init() {
+    applyTheme();
+    setupThemeToggle();
     renderAll();
     setupNav();
     setupMonthNav();
@@ -25,6 +29,29 @@ function init() {
     setupCategoryForm();
     setupClearMonth();
     setDefaultDate();
+}
+
+/* ===== THEME ===== */
+function getStoredTheme() {
+    return localStorage.getItem('spendly_theme');
+}
+
+function applyTheme() {
+    const stored = getStoredTheme();
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const dark = stored ? stored === 'dark' : prefersDark;
+
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    document.querySelector('meta[name="theme-color"]').content = dark ? '#111413' : '#F7F3EC';
+}
+
+function setupThemeToggle() {
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        const dark = document.documentElement.getAttribute('data-theme') !== 'dark';
+        localStorage.setItem('spendly_theme', dark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+        document.querySelector('meta[name="theme-color"]').content = dark ? '#111413' : '#F7F3EC';
+    });
 }
 
 /* ===== RENDER ALL ===== */
@@ -271,14 +298,34 @@ function updateBudgetInput() {
 /* ===== CATEGORY FORM ===== */
 function setupCategoryForm() {
     const form = document.getElementById('add-category-form');
+    const emojiBtn = document.getElementById('emoji-pick-btn');
+    const emojiGrid = document.getElementById('emoji-grid');
+
+    emojiBtn.addEventListener('click', () => {
+        emojiGridOpen = !emojiGridOpen;
+        emojiGrid.style.display = emojiGridOpen ? 'grid' : 'none';
+        if (emojiGridOpen) {
+            ui.renderEmojiGrid((emoji) => {
+                selectedEmoji = emoji;
+                emojiBtn.textContent = emoji;
+                emojiGridOpen = false;
+                emojiGrid.style.display = 'none';
+            });
+        }
+    });
+
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const nameInput = document.getElementById('new-category-name');
         const name = nameInput.value.trim();
         if (!name) return;
 
-        store.addCategory(name);
+        store.addCategory(name, selectedEmoji);
         nameInput.value = '';
+        selectedEmoji = '📌';
+        emojiBtn.textContent = '📌';
+        emojiGridOpen = false;
+        emojiGrid.style.display = 'none';
         ui.toast(`Category "${name}" added!`);
         ui.renderCategoryManager(handleDeleteCategory);
         ui.renderCategoryPicker(selectedCategory);

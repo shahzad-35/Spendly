@@ -154,6 +154,30 @@ export function renderCategoryManager(onDelete) {
     });
 }
 
+/* ===== EMOJI PICKER ===== */
+const EMOJI_SET = [
+    '🍔', '🍕', '🍜', '🥗', '☕', '🍺', '🛒', '🍰',
+    '🚗', '🚕', '🚌', '✈️', '⛽', '🚲', '🚇', '🛴',
+    '🏠', '💡', '🔧', '🛋️', '🧹', '🪴', '🔑', '🏢',
+    '🛍️', '👕', '👟', '📱', '💻', '🎧', '💍', '🎁',
+    '💊', '🏥', '🦷', '💪', '🧘', '🩺', '🧴', '👶',
+    '🎬', '🎮', '🎵', '📚', '🎨', '⚽', '🎭', '🐕',
+    '💰', '💳', '📊', '🎓', '✏️', '💼', '📦', '📌',
+];
+
+export function renderEmojiGrid(onPick) {
+    const grid = document.getElementById('emoji-grid');
+    grid.innerHTML = EMOJI_SET.map(e =>
+        `<button type="button" class="emoji-option" data-emoji="${e}">${e}</button>`
+    ).join('');
+
+    grid.querySelectorAll('.emoji-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (onPick) onPick(btn.dataset.emoji);
+        });
+    });
+}
+
 /* ===== MONTH PICKER ===== */
 const MONTH_NAMES_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
