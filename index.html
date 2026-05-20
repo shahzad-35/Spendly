@@ -71,6 +71,21 @@
         </div>
       </section>
 
+      <!-- Insights -->
+      <section class="insights-card glass-card" id="insights-card" style="display:none">
+        <h2 class="section-title">Insights</h2>
+        <div class="insights-list" id="insights-list"></div>
+      </section>
+
+      <!-- Income -->
+      <section class="income-card glass-card" id="income-card" style="display:none">
+        <div class="income-header">
+          <h2 class="section-title" style="margin-bottom:0">Income</h2>
+          <span class="income-total" id="income-total"></span>
+        </div>
+        <ul class="income-list" id="income-list"></ul>
+      </section>
+
       <!-- Category Donut -->
       <section class="chart-card glass-card" id="chart-card">
         <h2 class="section-title">Breakdown</h2>
@@ -99,9 +114,13 @@
 
     </main>
 
-    <!-- ===== ADD EXPENSE VIEW ===== -->
+    <!-- ===== ADD VIEW ===== -->
     <main id="view-add" class="view">
-      <section class="form-card glass-card">
+      <div class="add-tabs" id="add-tabs">
+        <button class="add-tab active" data-tab="expense">Expense</button>
+        <button class="add-tab" data-tab="income">Income</button>
+      </div>
+      <section class="form-card glass-card" id="expense-form-card">
         <h2 class="section-title">Add Expense</h2>
         <form id="expense-form" autocomplete="off">
           <div class="form-group">
@@ -121,6 +140,24 @@
             <input type="date" id="expense-date" required />
           </div>
           <button type="submit" class="btn-primary" id="btn-add-expense">Add Expense</button>
+        </form>
+      </section>
+      <section class="form-card glass-card" id="income-form-card" style="display:none">
+        <h2 class="section-title">Add Income</h2>
+        <form id="income-form" autocomplete="off">
+          <div class="form-group">
+            <label for="income-amount">Amount</label>
+            <input type="text" id="income-amount" placeholder="0" required inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <label for="income-source">Source <span class="optional">(optional)</span></label>
+            <input type="text" id="income-source" placeholder="e.g. Salary, Freelance" maxlength="40" />
+          </div>
+          <div class="form-group">
+            <label for="income-date">Date</label>
+            <input type="date" id="income-date" required />
+          </div>
+          <button type="submit" class="btn-primary">Add Income</button>
         </form>
       </section>
     </main>
@@ -187,6 +224,18 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
             Export PDF
           </button>
+        </div>
+      </section>
+      <section class="form-card glass-card" style="margin-top:16px">
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-label">Daily Reminder</span>
+            <span class="setting-hint" id="reminder-hint">Get a notification at 10 PM to log expenses</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="reminder-checkbox" />
+            <span class="toggle-track"></span>
+          </label>
         </div>
       </section>
       <section class="form-card glass-card" style="margin-top:16px">

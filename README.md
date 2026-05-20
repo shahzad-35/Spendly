@@ -170,9 +170,9 @@ The app follows the **Spendly Design System** — a warm, calm aesthetic for fin
 ---
 
 ## Upcoming features
-- [ ] Income tracking alongside expenses
-- [ ] Daily 10pm reminder notification to log expenses
-- [ ] Spending insights and rule-based tips
+- [x] Income tracking alongside expenses
+- [x] Daily 10pm reminder notification to log expenses
+- [x] Spending insights and rule-based tips
 - [ ] Multi-currency support with conversion
 - [ ] Receipt photo attachment
 ---

@@ -663,6 +663,71 @@ body {
   text-decoration: underline;
 }
 
+/* ===== SETTING ROW / TOGGLE ===== */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.setting-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.setting-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+.setting-hint {
+  font-size: 12px;
+  color: var(--ink-500);
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.toggle input { display: none; }
+
+.toggle-track {
+  display: block;
+  width: 44px;
+  height: 26px;
+  background: var(--ink-200);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  transition: background 0.25s;
+  position: relative;
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: var(--paper);
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-xs);
+  transition: transform 0.25s;
+}
+
+.toggle input:checked + .toggle-track {
+  background: var(--emerald-500);
+}
+
+.toggle input:checked + .toggle-track::after {
+  transform: translateX(18px);
+}
+
 /* ===== BUDGET LOCKED ===== */
 .budget-locked {
   display: flex;
@@ -1138,6 +1203,163 @@ input[type="number"] {
 [data-theme="dark"] .theme-icon {
   color: var(--emerald-400);
 }
+
+/* ===== ADD TABS ===== */
+.add-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--ink-100);
+  border-radius: var(--r-full);
+  padding: 3px;
+  margin-bottom: 16px;
+}
+
+.add-tab {
+  flex: 1;
+  padding: 9px 0;
+  border: none;
+  border-radius: var(--r-full);
+  background: transparent;
+  color: var(--ink-500);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.add-tab.active {
+  background: var(--paper);
+  color: var(--ink-900);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ===== INCOME CARD ===== */
+.income-card { margin-bottom: 16px; }
+
+.income-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.income-total {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--emerald-700);
+}
+
+.income-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.income-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ink-150);
+  animation: slideIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.income-item:last-child { border-bottom: none; }
+
+.income-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.income-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.income-source {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-900);
+  margin-bottom: 2px;
+}
+
+.income-date {
+  font-size: 12px;
+  color: var(--ink-500);
+}
+
+.income-amount-text {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--emerald-700);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.income-delete {
+  background: none;
+  border: none;
+  color: var(--ink-300);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 0.9rem;
+  opacity: 0.6;
+  transition: opacity 0.2s, color 0.2s;
+}
+.income-delete:hover { opacity: 1; color: var(--bad); }
+
+/* ===== INSIGHTS CARD ===== */
+.insights-card { margin-bottom: 16px; }
+
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  animation: slideIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.insight-emoji {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.insight-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink-900);
+}
+
+.insight-item.good  { background: var(--good-soft); }
+.insight-item.warn  { background: var(--warn-soft); }
+.insight-item.bad   { background: var(--bad-soft); }
+.insight-item.neutral { background: var(--ink-100); }
+
+.insight-item.good .insight-text  { color: var(--good); }
+.insight-item.warn .insight-text  { color: var(--warn); }
+.insight-item.bad .insight-text   { color: var(--bad); }
 
 /* ===== RESPONSIVE ===== */
 @media (min-width: 520px) {

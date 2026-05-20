@@ -104,6 +104,31 @@ export function deleteExpense(monthKey, expenseId) {
     saveAll(all);
 }
 
+/** Add an income entry */
+export function addIncome(monthKey, income) {
+    const all = loadAll();
+    if (!all[monthKey]) all[monthKey] = { budget: 0, expenses: [] };
+    if (!all[monthKey].income) all[monthKey].income = [];
+    income.id = 'inc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+    all[monthKey].income.unshift(income);
+    saveAll(all);
+    return income;
+}
+
+/** Delete an income entry */
+export function deleteIncome(monthKey, incomeId) {
+    const all = loadAll();
+    if (!all[monthKey] || !all[monthKey].income) return;
+    all[monthKey].income = all[monthKey].income.filter(i => i.id !== incomeId);
+    saveAll(all);
+}
+
+/** Get total income for a month */
+export function getTotalIncome(monthKey) {
+    const month = getMonth(monthKey);
+    return (month.income || []).reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
+}
+
 /** Get total spent for a month */
 export function getTotalSpent(monthKey) {
     const month = getMonth(monthKey);
