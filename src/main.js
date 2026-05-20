@@ -5,6 +5,7 @@
 import './style.css';
 import { inject } from '@vercel/analytics';
 import * as store from './store.js';
+import { compressImage } from './receipt.js';
 
 inject();
 import * as ui from './ui.js';
@@ -15,6 +16,7 @@ let calendarOpen = false;
 let calendarYear = new Date().getFullYear();
 let selectedEmoji = '📌';
 let emojiGridOpen = false;
+let pendingReceipt = null;
 
 /* ===== INIT ===== */
 function init() {
@@ -27,6 +29,8 @@ function init() {
     setupCalendar();
     setupAddTabs();
     setupExpenseForm();
+    setupReceiptInput();
+    setupReceiptViewer();
     setupIncomeForm();
     setupBudgetForm();
     setupCategoryForm();
@@ -69,7 +73,7 @@ function renderAll() {
     ui.renderIncome(currentMonth, handleDeleteIncome);
     ui.renderDonut(currentMonth);
     ui.renderBarChart(currentMonth);
-    ui.renderExpenses(currentMonth, handleDeleteExpense);
+    ui.renderExpenses(currentMonth, handleDeleteExpense, showReceiptOverlay);
     ui.renderCategoryPicker(selectedCategory);
     ui.renderCategoryManager(handleDeleteCategory);
     ui.renderRecurringList(handleDeleteRecurring);
@@ -102,7 +106,7 @@ function switchView(viewName) {
             ui.renderIncome(currentMonth, handleDeleteIncome);
             ui.renderDonut(currentMonth);
             ui.renderBarChart(currentMonth);
-            ui.renderExpenses(currentMonth, handleDeleteExpense);
+            ui.renderExpenses(currentMonth, handleDeleteExpense, showReceiptOverlay);
         } else if (viewName === 'add') {
             ui.renderCategoryPicker(selectedCategory);
             setupCategoryChipListeners();
@@ -257,6 +261,61 @@ function handleDeleteIncome(incomeId) {
     ui.renderInsights(currentMonth);
 }
 
+/* ===== RECEIPT INPUT ===== */
+function setupReceiptInput() {
+    const fileInput = document.getElementById('expense-receipt');
+    const btn = document.getElementById('btn-receipt');
+    const preview = document.getElementById('receipt-preview');
+    const previewImg = document.getElementById('receipt-preview-img');
+    const removeBtn = document.getElementById('receipt-remove');
+
+    btn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        try {
+            pendingReceipt = await compressImage(file);
+            previewImg.src = pendingReceipt;
+            preview.style.display = '';
+            btn.style.display = 'none';
+        } catch {
+            ui.toast('Failed to process image', 'error');
+        }
+    });
+
+    removeBtn.addEventListener('click', () => {
+        pendingReceipt = null;
+        fileInput.value = '';
+        preview.style.display = 'none';
+        btn.style.display = '';
+    });
+}
+
+function resetReceiptInput() {
+    pendingReceipt = null;
+    document.getElementById('expense-receipt').value = '';
+    document.getElementById('receipt-preview').style.display = 'none';
+    document.getElementById('btn-receipt').style.display = '';
+}
+
+/* ===== RECEIPT VIEWER ===== */
+function setupReceiptViewer() {
+    const overlay = document.getElementById('receipt-overlay');
+    const closeBtn = document.getElementById('receipt-overlay-close');
+
+    closeBtn.addEventListener('click', () => { overlay.style.display = 'none'; });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.style.display = 'none';
+    });
+}
+
+function showReceiptOverlay(src) {
+    const overlay = document.getElementById('receipt-overlay');
+    document.getElementById('receipt-overlay-img').src = src;
+    overlay.style.display = 'flex';
+}
+
 /* ===== EXPENSE FORM ===== */
 function setupExpenseForm() {
     const form = document.getElementById('expense-form');
@@ -296,16 +355,21 @@ function setupExpenseForm() {
         // Determine which month this expense belongs to
         const expenseMonth = date.substring(0, 7); // YYYY-MM
 
-        store.addExpense(expenseMonth, {
+        const newExpense = store.addExpense(expenseMonth, {
             amount,
             category: selectedCategory,
             note,
             date,
         });
 
+        if (pendingReceipt) {
+            store.attachReceipt(expenseMonth, newExpense.id, pendingReceipt);
+        }
+
         ui.toast('Expense added! 🎉');
         form.reset();
         setDefaultDate();
+        resetReceiptInput();
         selectedCategory = null;
         ui.renderCategoryPicker(null);
         setupCategoryChipListeners();
@@ -316,7 +380,7 @@ function setupExpenseForm() {
             ui.renderIncome(currentMonth, handleDeleteIncome);
             ui.renderDonut(currentMonth);
             ui.renderBarChart(currentMonth);
-            ui.renderExpenses(currentMonth, handleDeleteExpense);
+            ui.renderExpenses(currentMonth, handleDeleteExpense, showReceiptOverlay);
             updateExportVisibility();
         }
 
@@ -607,7 +671,7 @@ function handleDeleteExpense(expenseId) {
     ui.renderInsights(currentMonth);
     ui.renderDonut(currentMonth);
     ui.renderBarChart(currentMonth);
-    ui.renderExpenses(currentMonth, handleDeleteExpense);
+    ui.renderExpenses(currentMonth, handleDeleteExpense, showReceiptOverlay);
     updateExportVisibility();
 }
 

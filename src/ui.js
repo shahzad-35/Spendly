@@ -110,7 +110,7 @@ export function renderBudget(monthKey) {
 }
 
 /* ===== EXPENSE LIST ===== */
-export function renderExpenses(monthKey, onDelete) {
+export function renderExpenses(monthKey, onDelete, onReceiptView) {
     const month = store.getMonth(monthKey);
     const cats = store.getCategories();
     const list = document.getElementById('expense-list');
@@ -128,6 +128,9 @@ export function renderExpenses(monthKey, onDelete) {
         const cat = cats.find(c => c.id === e.category) || { emoji: '📦', name: e.category, color: '#6b7280' };
         const dateStr = formatDate(e.date);
         const noteStr = e.note ? `${e.note} · ` : '';
+        const receiptHtml = e.receipt
+            ? `<img class="receipt-thumb" data-id="${e.id}" src="${e.receipt}" alt="Receipt" />`
+            : '';
         return `
       <li class="expense-item" data-id="${e.id}">
         <div class="expense-icon" style="background:${cat.color}18;color:${cat.color}">${cat.emoji}</div>
@@ -135,17 +138,22 @@ export function renderExpenses(monthKey, onDelete) {
           <div class="expense-category">${cat.name}</div>
           <div class="expense-note-date">${noteStr}${dateStr}</div>
         </div>
+        ${receiptHtml}
         <div class="expense-amount">${fmt(e.amount)}</div>
         <button class="expense-delete" data-id="${e.id}" title="Delete">✕</button>
       </li>
     `;
     }).join('');
 
-    // Attach delete handlers
     list.querySelectorAll('.expense-delete').forEach(btn => {
         btn.addEventListener('click', () => {
-            const id = btn.dataset.id;
-            if (onDelete) onDelete(id);
+            if (onDelete) onDelete(btn.dataset.id);
+        });
+    });
+
+    list.querySelectorAll('.receipt-thumb').forEach(img => {
+        img.addEventListener('click', () => {
+            if (onReceiptView) onReceiptView(img.src);
         });
     });
 }

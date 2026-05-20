@@ -21,29 +21,29 @@ No accounts, no servers — your data stays on your device.
 ## Preview
 
 ```
- ┌─────────────────────────────────────────┐
- │  [logo] Spendly       ◂ May 2026 ▸     │
- ├─────────────────────────────────────────┤
- │                                         │
- │  MONTHLY BUDGET                  Edit   │
- │  50,000                                 │
- │  ████████████░░░░░░░░░░░░  62%          │
- │  Spent: 31,200             Left: 18,800 │
- │                                         │
- │  Breakdown              ┌──────────┐    │
- │    ● Food      12,400   │  ╭────╮  │    │
- │    ● Transit    6,800   │  │ 31k│  │    │
- │    ● Shopping   5,200   │  ╰────╯  │    │
- │    ● Bills      4,100   └──────────┘    │
- │                                         │
- │  Recent Expenses                        │
- │  🍔 Food    Lunch · May 14     1,200    │
- │  🚗 Transit Uber  · May 13       800    │
- │  🛍️ Shopping · May 12    3,500    │
- │                                         │
- ├──────┬──────────┬───────────────────────┤
- │ Home │   [ + ]  │  Settings             │
- └──────┴──────────┴───────────────────────┘
+ ┌───────────────────────────────────────────┐
+ │  [logo] Spendly       ◂ May 2026 ▸        │
+ ├───────────────────────────────────────────┤
+ │                                           │
+ │  MONTHLY BUDGET                  Edit     │
+ │  50,000                                   │
+ │  ████████████░░░░░░░░░░░░  62%            │
+ │  Spent: 31,200             Left: 18,800   │
+ │                                           │
+ │  Breakdown              ┌──────────┐      │
+ │    ● Food      12,400   │  ╭────╮  │      │
+ │    ● Transit    6,800   │  │ 31k│  │      │
+ │    ● Shopping   5,200   │  ╰────╯  │      │
+ │    ● Bills      4,100   └──────────┘      │
+ │                                           │
+ │  Recent Expenses                          │
+ │  🍔 Food    Lunch · May 14     1,200      │
+ │  🚗 Transit Uber  · May 13       800      │
+ │  🛍️ Shopping · May 12    3,500            │
+ │                                           │
+ ├────────┬──────────┬───────────────────────┤
+ │ Home   │   [ + ]  │  Settings             │
+ └────────┴──────────┴───────────────────────┘
 ```
 
 ---
@@ -170,11 +170,8 @@ The app follows the **Spendly Design System** — a warm, calm aesthetic for fin
 ---
 
 ## Upcoming features
-- [x] Income tracking alongside expenses
-- [x] Daily 10pm reminder notification to log expenses
-- [x] Spending insights and rule-based tips
-- [ ] Multi-currency support with conversion
-- [ ] Receipt photo attachment
+- [x] Receipt photo attachment
+- [ ] Migrate receipt storage to IndexedDB for better scalability
 ---
 
 <div align="center">
