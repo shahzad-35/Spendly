@@ -3,7 +3,6 @@
    ======================================== */
 
 import * as store from './store.js';
-import { generateInsights } from './insights.js';
 
 /* ===== FORMAT HELPERS ===== */
 function fmt(n) {
@@ -234,26 +233,6 @@ export function renderIncome(monthKey, onDelete) {
             if (onDelete) onDelete(btn.dataset.id);
         });
     });
-}
-
-/* ===== INSIGHTS ===== */
-export function renderInsights(monthKey) {
-    const insights = generateInsights(monthKey);
-    const card = document.getElementById('insights-card');
-    const list = document.getElementById('insights-list');
-
-    if (insights.length === 0) {
-        card.style.display = 'none';
-        return;
-    }
-
-    card.style.display = '';
-    list.innerHTML = insights.map(i => `
-    <div class="insight-item ${i.type}">
-      <span class="insight-emoji">${i.emoji}</span>
-      <span class="insight-text">${i.text}</span>
-    </div>
-  `).join('');
 }
 
 /* ===== CATEGORY PICKER ===== */

@@ -37,7 +37,6 @@ function init() {
     setupRecurringForm();
     setupClearMonth();
     setupExport();
-    setupReminder();
     setDefaultDate();
 }
 
@@ -69,7 +68,6 @@ function renderAll() {
     closeCalendar();
     document.getElementById('current-month-label').textContent = store.monthLabel(currentMonth);
     ui.renderBudget(currentMonth);
-    ui.renderInsights(currentMonth);
     ui.renderIncome(currentMonth, handleDeleteIncome);
     ui.renderDonut(currentMonth);
     ui.renderBarChart(currentMonth);
@@ -102,12 +100,12 @@ function switchView(viewName) {
         // Re-render when switching views
         if (viewName === 'dashboard') {
             ui.renderBudget(currentMonth);
-            ui.renderInsights(currentMonth);
             ui.renderIncome(currentMonth, handleDeleteIncome);
             ui.renderDonut(currentMonth);
             ui.renderBarChart(currentMonth);
             ui.renderExpenses(currentMonth, handleDeleteExpense, showReceiptOverlay);
         } else if (viewName === 'add') {
+            resetAddTabs();
             ui.renderCategoryPicker(selectedCategory);
             setupCategoryChipListeners();
         } else if (viewName === 'settings') {
@@ -178,6 +176,14 @@ function handleMonthPick(monthKey) {
 }
 
 /* ===== ADD TABS (Expense / Income) ===== */
+function resetAddTabs() {
+    const tabs = document.querySelectorAll('#add-tabs .add-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    tabs[0].classList.add('active');
+    document.getElementById('expense-form-card').style.display = '';
+    document.getElementById('income-form-card').style.display = 'none';
+}
+
 function setupAddTabs() {
     const tabs = document.querySelectorAll('#add-tabs .add-tab');
     const expenseCard = document.getElementById('expense-form-card');
@@ -239,7 +245,7 @@ function setupIncomeForm() {
 
         if (incomeMonth === currentMonth) {
             ui.renderIncome(currentMonth, handleDeleteIncome);
-            ui.renderInsights(currentMonth);
+        
         }
 
         switchView('dashboard');
@@ -258,7 +264,7 @@ function handleDeleteIncome(incomeId) {
     store.deleteIncome(currentMonth, incomeId);
     ui.toast('Income deleted');
     ui.renderIncome(currentMonth, handleDeleteIncome);
-    ui.renderInsights(currentMonth);
+
 }
 
 /* ===== RECEIPT INPUT ===== */
@@ -376,7 +382,6 @@ function setupExpenseForm() {
 
         if (expenseMonth === currentMonth) {
             ui.renderBudget(currentMonth);
-            ui.renderInsights(currentMonth);
             ui.renderIncome(currentMonth, handleDeleteIncome);
             ui.renderDonut(currentMonth);
             ui.renderBarChart(currentMonth);
@@ -448,7 +453,7 @@ function setupBudgetForm() {
         store.setBudget(currentMonth, amount);
         ui.toast('Budget saved! 💰');
         ui.renderBudget(currentMonth);
-        ui.renderInsights(currentMonth);
+    
         updateBudgetInput();
     });
 
@@ -607,68 +612,12 @@ function handleDeleteRecurring(id) {
     }
 }
 
-/* ===== DAILY REMINDER ===== */
-let lastReminderDate = localStorage.getItem('spendly_reminder_last') || '';
-
-function setupReminder() {
-    const checkbox = document.getElementById('reminder-checkbox');
-    const hint = document.getElementById('reminder-hint');
-    const enabled = localStorage.getItem('spendly_reminder') === 'on';
-    checkbox.checked = enabled;
-    hint.textContent = enabled ? "Enabled — you'll be notified at 10 PM" : 'Get a notification at 10 PM to log expenses';
-
-    checkbox.addEventListener('change', async () => {
-        if (checkbox.checked) {
-            if (!('Notification' in window)) {
-                ui.toast('Notifications not supported in this browser', 'error');
-                checkbox.checked = false;
-                return;
-            }
-            const perm = await Notification.requestPermission();
-            if (perm !== 'granted') {
-                ui.toast('Notification permission denied', 'error');
-                checkbox.checked = false;
-                return;
-            }
-            localStorage.setItem('spendly_reminder', 'on');
-            hint.textContent = "Enabled — you'll be notified at 10 PM";
-            ui.toast('Reminder enabled for 10 PM');
-        } else {
-            localStorage.setItem('spendly_reminder', 'off');
-            hint.textContent = 'Get a notification at 10 PM to log expenses';
-        }
-    });
-
-    checkReminder();
-    setInterval(checkReminder, 60000);
-}
-
-function checkReminder() {
-    if (localStorage.getItem('spendly_reminder') !== 'on') return;
-    if (Notification.permission !== 'granted') return;
-    const now = new Date();
-    if (now.getHours() !== 22 || now.getMinutes() !== 0) return;
-
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    if (lastReminderDate === todayStr) return;
-    lastReminderDate = todayStr;
-    localStorage.setItem('spendly_reminder_last', todayStr);
-
-    const mk = store.monthKey(now);
-    const todayExpenses = store.getExpensesByDate(mk, todayStr);
-    const body = todayExpenses.length === 0
-        ? "You haven't logged any expenses today. Tap to add one!"
-        : `You logged ${todayExpenses.length} expense${todayExpenses.length > 1 ? 's' : ''} today. Anything else?`;
-
-    new Notification('Spendly Reminder', { body, icon: '/icon-192.png' });
-}
-
 /* ===== DELETE EXPENSE ===== */
 function handleDeleteExpense(expenseId) {
     store.deleteExpense(currentMonth, expenseId);
     ui.toast('Expense deleted');
     ui.renderBudget(currentMonth);
-    ui.renderInsights(currentMonth);
+
     ui.renderDonut(currentMonth);
     ui.renderBarChart(currentMonth);
     ui.renderExpenses(currentMonth, handleDeleteExpense, showReceiptOverlay);
