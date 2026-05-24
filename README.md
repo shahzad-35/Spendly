@@ -21,29 +21,29 @@ No accounts, no servers — your data stays on your device.
 ## Preview
 
 ```
- ┌─────────────────────────────────────────┐
- │  [logo] Spendly       ◂ May 2026 ▸     │
- ├─────────────────────────────────────────┤
- │                                         │
- │  MONTHLY BUDGET                  Edit   │
- │  50,000                                 │
- │  ████████████░░░░░░░░░░░░  62%          │
- │  Spent: 31,200             Left: 18,800 │
- │                                         │
- │  Breakdown              ┌──────────┐    │
- │    ● Food      12,400   │  ╭────╮  │    │
- │    ● Transit    6,800   │  │ 31k│  │    │
- │    ● Shopping   5,200   │  ╰────╯  │    │
- │    ● Bills      4,100   └──────────┘    │
- │                                         │
- │  Recent Expenses                        │
- │  🍔 Food    Lunch · May 14     1,200    │
- │  🚗 Transit Uber  · May 13       800    │
- │  🛍️ Shopping · May 12    3,500    │
- │                                         │
- ├──────┬──────────┬───────────────────────┤
- │ Home │   [ + ]  │  Settings             │
- └──────┴──────────┴───────────────────────┘
+ ┌───────────────────────────────────────────┐
+ │  [logo] Spendly       ◂ May 2026 ▸        │
+ ├───────────────────────────────────────────┤
+ │                                           │
+ │  MONTHLY BUDGET                  Edit     │
+ │  50,000                                   │
+ │  ████████████░░░░░░░░░░░░  62%            │
+ │  Spent: 31,200             Left: 18,800   │
+ │                                           │
+ │  Breakdown              ┌──────────┐      │
+ │    ● Food      12,400   │  ╭────╮  │      │
+ │    ● Transit    6,800   │  │ 31k│  │      │
+ │    ● Shopping   5,200   │  ╰────╯  │      │
+ │    ● Bills      4,100   └──────────┘      │
+ │                                           │
+ │  Recent Expenses                          │
+ │  🍔 Food    Lunch · May 14     1,200      │
+ │  🚗 Transit Uber  · May 13       800      │
+ │  🛍️ Shopping · May 12    3,500            │
+ │                                           │
+ ├────────┬──────────┬───────────────────────┤
+ │ Home   │   [ + ]  │  Settings             │
+ └────────┴──────────┴───────────────────────┘
 ```
 
 ---
@@ -170,11 +170,28 @@ The app follows the **Spendly Design System** — a warm, calm aesthetic for fin
 ---
 
 ## Upcoming features
-- [x] Income tracking alongside expenses
-- [x] Daily 10pm reminder notification to log expenses
-- [x] Spending insights and rule-based tips
-- [ ] Multi-currency support with conversion
-- [ ] Receipt photo attachment
+
+### Data & Safety
+- [x] Receipt photo attachment
+- [ ] **Migrate receipt storage to IndexedDB** — Move receipt images from localStorage to IndexedDB to remove the ~5MB storage ceiling and support more receipts per month
+- [ ] **Backup & restore** — Export all app data as a single JSON file and import it back on any device. Protects against browser data loss and enables device migration
+- [ ] **PIN / biometric lock** — Optional app lock using a 4-digit PIN or device biometrics (fingerprint/face). Keeps financial data private on shared devices
+
+### Daily Usage
+- [ ] **Quick-add templates** — Save frequently used expenses (e.g. "Coffee 250, Food") as one-tap templates on the Add screen. Reduces daily logging to a single tap
+- [ ] **Expense search & filter** — Search expenses by note text, filter by category or date range. Essential once you have months of accumulated data
+- [ ] **Currency symbol picker** — Choose your local currency symbol (Rs, $, EUR, etc.) displayed across the app. Simple localization without multi-currency conversion complexity
+
+### Financial Planning
+- [ ] **Savings goals** — Create named goals (e.g. "Vacation: 50,000") with a target amount and deadline. Track progress using income minus expenses. Natural extension of the income tracking feature
+- [ ] **Bill due date reminders** — Attach due dates to recurring expenses and get push notifications before they're due. Builds on the existing recurring expenses and notification system
+- [ ] **Debt tracker** — Simple ledger to track who owes you and who you owe. Add entries like "Ali owes 500 for dinner" and mark them as settled. All stored locally
+
+### Engagement
+- [ ] **Weekly spending digest** — Push notification every Sunday with a summary of the week's spending, top category, and budget status. Extends the existing daily reminder pattern
+- [ ] **Spending streaks** — Light gamification that tracks consecutive days of staying under your daily budget average. Encourages consistent expense logging
+- [ ] **Annual summary** — Year-end report card showing total income, total spending, top categories, best/worst months, and savings rate. Gives meaning to a full year of data entry
+
 ---
 
 <div align="center">

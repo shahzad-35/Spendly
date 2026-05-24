@@ -71,12 +71,6 @@
         </div>
       </section>
 
-      <!-- Insights -->
-      <section class="insights-card glass-card" id="insights-card" style="display:none">
-        <h2 class="section-title">Insights</h2>
-        <div class="insights-list" id="insights-list"></div>
-      </section>
-
       <!-- Income -->
       <section class="income-card glass-card" id="income-card" style="display:none">
         <div class="income-header">
@@ -138,6 +132,20 @@
           <div class="form-group">
             <label for="expense-date">Date</label>
             <input type="date" id="expense-date" required />
+          </div>
+          <div class="form-group">
+            <label>Receipt <span class="optional">(optional)</span></label>
+            <div class="receipt-upload" id="receipt-upload">
+              <input type="file" id="expense-receipt" accept="image/*" capture="environment" hidden />
+              <button type="button" class="btn-receipt" id="btn-receipt">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Attach photo
+              </button>
+              <div class="receipt-preview" id="receipt-preview" style="display:none">
+                <img id="receipt-preview-img" alt="Receipt" />
+                <button type="button" class="receipt-remove" id="receipt-remove" title="Remove">✕</button>
+              </div>
+            </div>
           </div>
           <button type="submit" class="btn-primary" id="btn-add-expense">Add Expense</button>
         </form>
@@ -227,18 +235,6 @@
         </div>
       </section>
       <section class="form-card glass-card" style="margin-top:16px">
-        <div class="setting-row">
-          <div class="setting-info">
-            <span class="setting-label">Daily Reminder</span>
-            <span class="setting-hint" id="reminder-hint">Get a notification at 10 PM to log expenses</span>
-          </div>
-          <label class="toggle">
-            <input type="checkbox" id="reminder-checkbox" />
-            <span class="toggle-track"></span>
-          </label>
-        </div>
-      </section>
-      <section class="form-card glass-card" style="margin-top:16px">
         <h2 class="section-title">Data</h2>
         <p class="data-info">All data is stored locally on this device. Nothing is sent to any server.</p>
         <button id="btn-clear-month" class="btn-danger">Clear This Month</button>
@@ -279,6 +275,12 @@
       </button>
     </nav>
 
+  </div>
+
+  <!-- Receipt viewer overlay -->
+  <div id="receipt-overlay" class="receipt-overlay" style="display:none">
+    <button class="receipt-overlay-close" id="receipt-overlay-close" aria-label="Close">✕</button>
+    <img id="receipt-overlay-img" alt="Receipt" />
   </div>
 
   <!-- Toast container -->

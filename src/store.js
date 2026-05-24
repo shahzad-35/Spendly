@@ -233,6 +233,28 @@ export function applyRecurring(monthKeyStr) {
     return true;
 }
 
+/** Attach a receipt to an expense */
+export function attachReceipt(monthKey, expenseId, base64) {
+    const all = loadAll();
+    if (!all[monthKey]) return;
+    const expense = all[monthKey].expenses.find(e => e.id === expenseId);
+    if (expense) {
+        expense.receipt = base64;
+        saveAll(all);
+    }
+}
+
+/** Remove a receipt from an expense */
+export function removeReceipt(monthKey, expenseId) {
+    const all = loadAll();
+    if (!all[monthKey]) return;
+    const expense = all[monthKey].expenses.find(e => e.id === expenseId);
+    if (expense) {
+        delete expense.receipt;
+        saveAll(all);
+    }
+}
+
 /** Clear all data for a month */
 export function clearMonth(monthKey) {
     const all = loadAll();
