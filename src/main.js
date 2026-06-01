@@ -676,8 +676,8 @@ function initForegroundMessages() {
     foregroundMessagesInit = true;
     try {
         onForegroundMessage((payload) => {
-            const { title, body } = payload.notification || {};
-            ui.toast(body || title || 'Reminder received');
+            const body = payload.data?.body || payload.data?.title || 'Reminder received';
+            ui.toast(body);
         });
     } catch { /* Firebase not ready yet — will work after token is obtained */ }
 }

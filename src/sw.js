@@ -28,9 +28,10 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-    const { title, body } = payload.notification || {};
-    self.registration.showNotification(title || 'Spendly Reminder', {
-        body: body || "Don't forget to log your expenses today!",
+    const title = payload.data?.title || 'Spendly Reminder';
+    const body = payload.data?.body || "Don't forget to log your expenses today!";
+    self.registration.showNotification(title, {
+        body,
         icon: '/icon-192.png',
         badge: '/icon-192.png',
         data: { url: '/' },

@@ -5,13 +5,16 @@
 const STORAGE_KEY = 'expense_tracker_data';
 
 const DEFAULT_CATEGORIES = [
-    { id: 'food', name: 'Food', emoji: '🍔', color: '#D77B4D' },
-    { id: 'transport', name: 'Transit', emoji: '🚗', color: '#2D5DA1' },
-    { id: 'bills', name: 'Bills', emoji: '🏠', color: '#5C6A45' },
-    { id: 'shopping', name: 'Shopping', emoji: '🛍️', color: '#C9442E' },
-    { id: 'health', name: 'Health', emoji: '💊', color: '#1FA38A' },
-    { id: 'entertainment', name: 'Fun', emoji: '🎬', color: '#C18121' },
-    { id: 'other', name: 'Other', emoji: '📦', color: '#6E7B75' },
+    { id: 'grocery', name: 'Grocery', emoji: '🛒', color: '#5C6A45' },
+    { id: 'fruits', name: 'Fruits', emoji: '🍎', color: '#C9442E' },
+    { id: 'medicines', name: 'Medicines', emoji: '💊', color: '#1FA38A' },
+    { id: 'shopping', name: 'Shopping', emoji: '🛍️', color: '#6E5BA8' },
+    { id: 'fuel', name: 'Fuel', emoji: '⛽', color: '#2D5DA1' },
+    { id: 'committee', name: 'Committee', emoji: '💰', color: '#C18121' },
+    { id: 'lunch', name: 'Lunch', emoji: '🍽️', color: '#D77B4D' },
+    { id: 'outing', name: 'Outing', emoji: '🏖️', color: '#2D8FA1' },
+    { id: 'self', name: 'Self', emoji: '💈', color: '#8A5C9A' },
+    { id: 'vehicle', name: 'Vehicle', emoji: '🔧', color: '#6E7B75' },
 ];
 
 // Rotating colors for custom categories
