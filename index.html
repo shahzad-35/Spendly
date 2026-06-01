@@ -235,8 +235,20 @@
         </div>
       </section>
       <section class="form-card glass-card" style="margin-top:16px">
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-label">Daily Reminder</span>
+            <span class="setting-hint" id="reminder-hint">Get a push notification at 10 PM to log expenses</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="reminder-checkbox" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </section>
+      <section class="form-card glass-card" style="margin-top:16px">
         <h2 class="section-title">Data</h2>
-        <p class="data-info">All data is stored locally on this device. Nothing is sent to any server.</p>
+        <p class="data-info">All data is stored locally on this device. Reminders use Firebase for push notifications.</p>
         <button id="btn-clear-month" class="btn-danger">Clear This Month</button>
       </section>
       <section class="form-card glass-card built-by-card" style="margin-top:16px">
