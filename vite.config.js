@@ -5,6 +5,9 @@ export default defineConfig({
     plugins: [
         VitePWA({
             registerType: 'autoUpdate',
+            strategies: 'injectManifest',
+            srcDir: 'src',
+            filename: 'sw.js',
             includeAssets: ['icon-192.png', 'icon-512.png'],
             manifest: {
                 name: 'Spendly',
@@ -29,7 +32,7 @@ export default defineConfig({
                     }
                 ]
             },
-            workbox: {
+            injectManifest: {
                 globPatterns: ['**/*.{js,css,html,png,svg,woff2}']
             }
         })

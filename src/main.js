@@ -6,6 +6,7 @@ import './style.css';
 import { inject } from '@vercel/analytics';
 import * as store from './store.js';
 import { compressImage } from './receipt.js';
+import { requestToken, onForegroundMessage } from './firebase.js';
 
 inject();
 import * as ui from './ui.js';
@@ -37,6 +38,7 @@ function init() {
     setupRecurringForm();
     setupClearMonth();
     setupExport();
+    setupReminder();
     setDefaultDate();
 }
 
@@ -610,6 +612,74 @@ function handleDeleteRecurring(id) {
         ui.renderRecurringList(handleDeleteRecurring);
         ui.toast('Recurring expense removed');
     }
+}
+
+/* ===== DAILY REMINDER (FCM) ===== */
+function setupReminder() {
+    const checkbox = document.getElementById('reminder-checkbox');
+    const hint = document.getElementById('reminder-hint');
+    const enabled = localStorage.getItem('spendly_reminder') === 'on';
+    checkbox.checked = enabled;
+    hint.textContent = enabled
+        ? "Enabled — you'll get a push notification at 10 PM"
+        : 'Get a push notification at 10 PM to log expenses';
+
+    if (enabled) {
+        initForegroundMessages();
+    }
+
+    checkbox.addEventListener('change', async () => {
+        if (checkbox.checked) {
+            try {
+                if (!('Notification' in window)) throw new Error('Not supported');
+                const token = await requestToken();
+                const res = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token }),
+                });
+                console.log(res);
+                if (!res.ok) throw new Error('Subscribe failed');
+                localStorage.setItem('spendly_reminder', 'on');
+                localStorage.setItem('spendly_fcm_token', token);
+                hint.textContent = "Enabled — you'll get a push notification at 10 PM";
+                ui.toast('Reminder enabled');
+                initForegroundMessages();
+            } catch (err) {
+                checkbox.checked = false;
+                const msg = err.message === 'Permission denied'
+                    ? 'Notification permission denied'
+                    : err.message === 'Not supported'
+                        ? 'Notifications not supported in this browser'
+                        : 'Failed to enable reminder';
+                ui.toast(msg, 'error');
+            }
+        } else {
+            const token = localStorage.getItem('spendly_fcm_token');
+            if (token) {
+                fetch('/api/unsubscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token }),
+                }).catch(() => {});
+            }
+            localStorage.setItem('spendly_reminder', 'off');
+            localStorage.removeItem('spendly_fcm_token');
+            hint.textContent = 'Get a push notification at 10 PM to log expenses';
+        }
+    });
+}
+
+let foregroundMessagesInit = false;
+function initForegroundMessages() {
+    if (foregroundMessagesInit) return;
+    foregroundMessagesInit = true;
+    try {
+        onForegroundMessage((payload) => {
+            const { title, body } = payload.notification || {};
+            ui.toast(body || title || 'Reminder received');
+        });
+    } catch { /* Firebase not ready yet — will work after token is obtained */ }
 }
 
 /* ===== DELETE EXPENSE ===== */
