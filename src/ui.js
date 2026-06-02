@@ -123,7 +123,8 @@ export function renderExpenses(monthKey, onDelete, onReceiptView) {
 
     section.classList.remove('empty');
 
-    list.innerHTML = month.expenses.map(e => {
+    const sorted = [...month.expenses].sort((a, b) => b.date.localeCompare(a.date));
+    list.innerHTML = sorted.map(e => {
         const cat = cats.find(c => c.id === e.category) || { emoji: '📦', name: e.category, color: '#6b7280' };
         const dateStr = formatDate(e.date);
         const noteStr = e.note ? `${e.note} · ` : '';
