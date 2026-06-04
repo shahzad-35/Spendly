@@ -22,9 +22,12 @@ export default async function handler(req, res) {
         const fb = getAdmin();
         await fb.messaging().send({
             topic: 'daily-reminder',
-            data: {
-                title: 'Spendly Reminder',
-                body: "Don't forget to log your expenses today!",
+            webpush: {
+                notification: {
+                    title: 'Spendly Reminder',
+                    body: "Don't forget to log your expenses today!",
+                    icon: '/icon-192.png',
+                },
             },
         });
         res.json({ success: true });
